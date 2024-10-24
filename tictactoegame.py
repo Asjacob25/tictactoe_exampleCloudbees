@@ -41,6 +41,14 @@ class TicTacToe:
         self.current_player = player  # Restore the player who made the last move
         self.current_winner = None  # Reset winner in case it was set
         return True, f"Move undone. It's {self.current_player}'s turn again."
+    
+    def suggest_move(self):
+        available = self.available_moves()
+        if not available:
+            return "No moves available!"
+        
+        suggested_move = random.choice(available)  # Pick a random available move
+        return f"Suggested move for {self.current_player}: {suggested_move}"
 
     def check_winner(self, square):
         row_ind = square // self.board_size
