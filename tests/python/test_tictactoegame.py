@@ -1,4 +1,4 @@
-```python
+
 import pytest
 from unittest.mock import patch
 from tic_tac_toe import TicTacToe
@@ -43,4 +43,3 @@ def test_print_scores(capsys, tic_tac_toe):
     tic_tac_toe.print_scores()
     captured = capsys.readouterr()
     assert captured.out  # Check if scores are printed
-```
