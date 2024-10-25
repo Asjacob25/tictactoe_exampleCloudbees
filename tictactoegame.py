@@ -131,6 +131,10 @@ class TicTacToe:
             print("No winner yet.")
         print("\n")
 
+    def print_divider(self):
+        """Prints a visual divider for better readability between game updates."""
+        print("\n" + "-" * (self.board_size * 4) + "\n")
+
 def play_game():
     game = TicTacToe()
     print("Welcome to Tic Tac Toe!")
