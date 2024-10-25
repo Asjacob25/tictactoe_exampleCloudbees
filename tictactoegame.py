@@ -135,6 +135,11 @@ class TicTacToe:
         """Prints a visual divider for better readability between game updates."""
         print("\n" + "-" * (self.board_size * 4) + "\n")
 
+    def board_to_string(self):
+        """Returns the current board state as a formatted string."""
+        rows = ["| " + " | ".join(self.board[i*self.board_size:(i+1)*self.board_size]) + " |" for i in range(self.board_size)]
+        return "\n".join(rows)
+
 def play_game():
     game = TicTacToe()
     print("Welcome to Tic Tac Toe!")
