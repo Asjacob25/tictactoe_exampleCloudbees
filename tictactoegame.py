@@ -139,6 +139,13 @@ class TicTacToe:
         """Returns the current board state as a formatted string."""
         rows = ["| " + " | ".join(self.board[i*self.board_size:(i+1)*self.board_size]) + " |" for i in range(self.board_size)]
         return "\n".join(rows)
+    
+    def set_symbols(self, player_x='X', player_o='O'):
+        """Sets custom symbols for player X and player O."""
+        self.player_x = player_x
+        self.player_o = player_o
+        print(f"Player X symbol set to: {self.player_x}")
+        print(f"Player O symbol set to: {self.player_o}")
 
 def play_game():
     game = TicTacToe()
