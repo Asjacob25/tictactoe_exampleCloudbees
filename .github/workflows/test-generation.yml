@@ -43,7 +43,7 @@ jobs:
           report_path: './test-results/'
         if: always()
         env:
-          LAUNCHABLE_TOKEN: ${{ secret.LAUNCHABLE_TOKEN }}
+          LAUNCHABLE_TOKEN: ${{ secrets.LAUNCHABLE_TOKEN }}
 
 
   generate-tests:
