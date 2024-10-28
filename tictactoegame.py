@@ -157,6 +157,10 @@ class TicTacToe:
                 self.board_size * (self.board_size - 1), 
                 self.board_size * self.board_size - 1]
         return [corner for corner in corners if self.board[corner] == ' ']
+    
+    def is_game_over(self):
+        """Return True if the game is over (win or draw), otherwise False."""
+        return self.current_winner is not None or self.is_board_full()
 
     def print_divider(self):
         """Prints a visual divider for better readability between game updates."""

@@ -49,7 +49,7 @@ jobs:
 
       - name: get test coverage
         run: |
-          coverage = python -m pytest --cov=tictactoegame
+          coverage = $(python -m pytest --cov=tictactoegame)
       
       - name: Run test generation script
         if: env.changed_files != ''
