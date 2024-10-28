@@ -155,6 +155,12 @@ class TicTacToe:
         """Return the center square index if available, or None if it's occupied."""
         center = (self.board_size * self.board_size) // 2
         return center if self.board[center] == ' ' else None
+    
+    def get_player_moves(self, player):
+        """Return a list of moves made by the specified player."""
+        if player not in ['X', 'O']:
+            raise ValueError("Player must be 'X' or 'O'.")
+        return [index for index, value in enumerate(self.board) if value == player]
 
     def get_available_corners(self):
         """Return a list of available corner squares on the board."""
