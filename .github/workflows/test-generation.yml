@@ -30,7 +30,8 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install requests pytest pytest-cov
+          pip install requests pytest
+          pip install --user --upgrade launchable~=1.0  # Install Launchable CLI
       
       - name: Create tests directory
         run: mkdir -p tests
@@ -46,13 +47,6 @@ jobs:
             echo "No relevant source files changed"
             exit 0
           fi
-
-      - name: get test coverage
-        run: |
-          coverage=$(python -m pytest --cov=tictactoegame)
-          if [ -n "$coverage" ]; then
-            echo "coverage=$coverage" >> $GITHUB_ENV
-            echo "Found changed files: $coverage"
       
       - name: Run test generation script
         if: env.changed_files != ''
