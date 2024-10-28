@@ -208,6 +208,10 @@ class TicTacToe:
         print(f"Player X symbol set to: {self.player_x}")
         print(f"Player O symbol set to: {self.player_o}")
 
+    def get_remaining_moves_count(self):
+        """Returns the count of remaining available moves on the board."""
+        return len(self.available_moves())
+
 def play_game():
     game = TicTacToe()
     print("Welcome to Tic Tac Toe!")
