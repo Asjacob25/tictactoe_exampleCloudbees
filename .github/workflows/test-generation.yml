@@ -30,7 +30,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install requests pytest pytest-cov
+          pip install requests pytest
       
       - name: Create tests directory
         run: mkdir -p tests
@@ -46,6 +46,10 @@ jobs:
             echo "No relevant source files changed"
             exit 0
           fi
+
+      - name: get test coverage
+        run: |
+          coverage = python -m pytest --cov=tictactoegame
       
       - name: Run test generation script
         if: env.changed_files != ''
@@ -54,10 +58,6 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_MODEL: ${{ secrets.OPENAI_MODEL }}
           OPENAI_MAX_TOKENS: ${{ secrets.OPENAI_MAX_TOKENS }}
-
-      - name: Run tests with coverage
-        if: env.changed_files != ''
-        run: python -m pytest --cov=tictactoegame --cov-report=term-missing
       
       - name: Create unique branch name
         if: env.changed_files != ''
@@ -89,7 +89,7 @@ jobs:
         if: env.CHANGES_PUSHED == '1'
         uses: repo-sync/pull-request@v2
         with:
-          github_token: ${{ secrets.PAT_TOKEN }}
+          github_token: ${{ secrets.PAT_TOKEN }}  # Use PAT for PR creation
           pr_title: "✨ New Test Cases Generated"
           pr_body: |
             ## 🤖 Automated Test Generation
@@ -97,11 +97,6 @@ jobs:
             Generated test cases for the following files:
             ```
             ${{ env.changed_files }}
-            ```
-            
-            Test coverage report:
-            ```plaintext
-            $(cat coverage_report.txt)
             ```
             
             Please review these generated tests for:

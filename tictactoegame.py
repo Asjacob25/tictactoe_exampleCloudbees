@@ -140,7 +140,16 @@ class TicTacToe:
         self.board = [" " for _ in range(9)]  # Set all cells to empty
         self.current_winner = None
         return "Board has been reset."
-
+    
+    def get_game_state(self):
+        """Return the current game state as a dictionary."""
+        return {
+            "board": self.board,
+            "current_player": self.current_player,
+            "current_winner": self.current_winner,
+            "move_history": self.move_history,
+            "scores": self.scores
+        }
 
     def print_divider(self):
         """Prints a visual divider for better readability between game updates."""
