@@ -113,6 +113,15 @@ class TicTacToe:
             "move_history": self.move_history
         }
         return json.dumps(board_json, indent=2)
+    
+    def game_status(self):
+        """Returns a brief summary of the game status."""
+        if self.current_winner:
+            return f"Player {self.current_winner} has won the game!"
+        elif self.is_board_full():
+            return "It's a draw!"
+        else:
+            return f"Game is ongoing. It's {self.current_player}'s turn."
 
     def load_game(self, filename="tictactoe_save.json"):
         """Load the game state from a file."""
