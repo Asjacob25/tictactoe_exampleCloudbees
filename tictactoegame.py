@@ -150,6 +150,13 @@ class TicTacToe:
             "move_history": self.move_history,
             "scores": self.scores
         }
+    
+    def get_available_corners(self):
+        """Return a list of available corner squares on the board."""
+        corners = [0, self.board_size - 1, 
+                self.board_size * (self.board_size - 1), 
+                self.board_size * self.board_size - 1]
+        return [corner for corner in corners if self.board[corner] == ' ']
 
     def print_divider(self):
         """Prints a visual divider for better readability between game updates."""
