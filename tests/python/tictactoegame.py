@@ -114,6 +114,16 @@ class TicTacToe:
         }
         return json.dumps(board_json, indent=2)
     
+    def display_move_history(self):
+        """Displays a list of all moves made in the game with the player and position."""
+        if not self.move_history:
+            print("No moves have been made yet.")
+        else:
+            print("Move History:")
+            for move_num, (position, player) in enumerate(self.move_history, start=1):
+                print(f"Move {move_num}: Player {player} to position {position}")
+
+    
     def game_status(self):
         """Returns a brief summary of the game status."""
         if self.current_winner:
