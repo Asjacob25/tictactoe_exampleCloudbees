@@ -22,17 +22,19 @@ jobs:
           fetch-depth: 0  # Fetch all history
           token: ${{ secrets.PAT_TOKEN }}  # Use PAT for checkout
       
-      - name: Set up Docker
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'
+      
+      - name: Install dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y docker.io
-          sudo systemctl start docker
-          sudo systemctl enable docker
-
-      - name: Build Docker image
-        run: |
-          docker build -t test-generator .
-
+          python -m pip install --upgrade pip
+          pip install requests pytest
+      
+      - name: Create tests directory
+        run: mkdir -p tests
+      
       - name: Detect changed files
         id: files
         run: |
@@ -45,14 +47,14 @@ jobs:
             exit 0
           fi
       
-      - name: Run Docker container
+      - name: Run test generation script
         if: env.changed_files != ''
-        run: |
-          docker run --rm -e OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \
-                       -e OPENAI_MODEL="${{ secrets.OPENAI_MODEL }}" \
-                       -e OPENAI_MAX_TOKENS="${{ secrets.OPENAI_MAX_TOKENS }}" \
-                       test-generator "${{ env.changed_files }}"
-
+        run: python generate_tests.py "${{ env.changed_files }}"
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: ${{ secrets.OPENAI_MODEL }}
+          OPENAI_MAX_TOKENS: ${{ secrets.OPENAI_MAX_TOKENS }}
+      
       - name: Create unique branch name
         if: env.changed_files != ''
         run: |
