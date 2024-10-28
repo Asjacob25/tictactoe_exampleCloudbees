@@ -151,6 +151,11 @@ class TicTacToe:
             "scores": self.scores
         }
     
+    def get_center_square(self):
+        """Return the center square index if available, or None if it's occupied."""
+        center = (self.board_size * self.board_size) // 2
+        return center if self.board[center] == ' ' else None
+
     def get_available_corners(self):
         """Return a list of available corner squares on the board."""
         corners = [0, self.board_size - 1, 
