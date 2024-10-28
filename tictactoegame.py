@@ -134,6 +134,13 @@ class TicTacToe:
     def current_player_symbol(self):
         """Return the symbol of the current player."""
         return f"The current player is: {self.current_player}"
+    
+    def reset_board(self):
+        """Resets the board to start a new game."""
+        self.board = [" " for _ in range(9)]  # Set all cells to empty
+        self.current_winner = None
+        return "Board has been reset."
+
 
     def print_divider(self):
         """Prints a visual divider for better readability between game updates."""
