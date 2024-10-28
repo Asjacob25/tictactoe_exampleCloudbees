@@ -104,6 +104,16 @@ class TicTacToe:
             json.dump(game_state, f)
         print(f"Game saved to {filename}.")
 
+    def board_to_json(self):
+        """Returns the current board state as a JSON object."""
+        board_json = {
+            "board": [self.board[i*self.board_size:(i+1)*self.board_size] for i in range(self.board_size)],
+            "current_player": self.current_player,
+            "current_winner": self.current_winner,
+            "move_history": self.move_history
+        }
+        return json.dumps(board_json, indent=2)
+
     def load_game(self, filename="tictactoe_save.json"):
         """Load the game state from a file."""
         try:
