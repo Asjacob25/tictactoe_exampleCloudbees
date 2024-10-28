@@ -131,6 +131,10 @@ class TicTacToe:
             print("No winner yet.")
         print("\n")
 
+    def current_player_symbol(self):
+        """Return the symbol of the current player."""
+        return f"The current player is: {self.current_player}"
+
     def print_divider(self):
         """Prints a visual divider for better readability between game updates."""
         print("\n" + "-" * (self.board_size * 4) + "\n")
