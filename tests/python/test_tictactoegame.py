@@ -4,7 +4,10 @@ from tictactoegame import TicTacToe
 
 
 class TestMain(unittest.TestCase):
-    new_game = TicTacToe()
+   # new_game = TicTacToe()
+    def test(self):
+        game = TicTacToe()
+        assert game.make_move(0) == (True, "Move successful")
 
     # def test_initial_board_size(new_game):
     #     assert new_game.board_size == 3

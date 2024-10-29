@@ -20,6 +20,11 @@ class TicTacToe:
         if self.board[square] != ' ':
             return False, "Square already occupied"
         return True, "Valid move"
+    
+    def is_center_available(self):
+        """Returns True if the center square is available, otherwise False."""
+        center = (self.board_size * self.board_size) // 2
+        return self.board[center] == ' '
 
     def make_move(self, square):
         valid, message = self.validate_move(square)
