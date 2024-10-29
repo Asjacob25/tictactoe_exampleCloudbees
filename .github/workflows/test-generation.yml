@@ -65,6 +65,7 @@ jobs:
           else
             echo "No relevant source files changed"
             exit 0
+          fi
 
       - name: Generate Coverage Report for Changed Files
         if: env.changed_files != ''
