@@ -14,61 +14,48 @@ on:
       - '**.cs'
 
 jobs:
-
   connect-launchable:
-     runs-on: ubuntu-latest
-     steps:
+    runs-on: ubuntu-latest
+    steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
-      - name: Install dependencies Part 2
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install requests pytest pytest-cov
-          pip install pytest
-      
-      - name: Python Test
-        run: pytest --junit-xml=test-results/results.xml  # report.xml
+          pip install requests pytest pytest-cov launchable
 
-      - name: Verify Launchable Results #not sure if its the right order or not
-        run: launchable verify || true  # Add this step for verification
+      - name: Run Python Tests
+        run: pytest --junit-xml=test-results/results.xml
 
-
-
-      - name: Record test results to Launchable workspace
-        uses: launchableinc/record-build-and-test-results-action@v1.0.0
-        with:
-          test_runner: pytest
-          report_path: './test-results/'
-        if: always()
+      - name: Record and Verify Launchable Results
+        run: |
+          launchable record tests --build <build-name> --source ./test-results
+          launchable verify || true
         env:
           LAUNCHABLE_TOKEN: ${{ secrets.LAUNCHABLE_TOKEN }}
 
-
   generate-tests:
     runs-on: ubuntu-latest
-    environment: testgeneration  
+    environment: testgeneration
     steps:
       - uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # Fetch all history
-          token: ${{ secrets.PAT_TOKEN }}  # Use PAT for checkout
-      
+          fetch-depth: 0
+          token: ${{ secrets.PAT_TOKEN }}
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.8'
-      
-      - name: Install dependencies Part 2
+
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install requests pytest pytest-cov
-      
-      - name: Create tests directory
-        run: mkdir -p tests
-      
-      - name: Detect changed files
+
+      - name: Detect Changed Files
         id: files
         run: |
           changed_files=$(git diff --name-only HEAD^ HEAD | grep -E '\.(py|js|ts|java|cpp|cs)$' || true)
@@ -78,47 +65,35 @@ jobs:
           else
             echo "No relevant source files changed"
             exit 0
-          fi
 
-      - name: Create coverage_files
+      - name: Generate Coverage Report for Changed Files
         if: env.changed_files != ''
         run: |
-          coverage_files=$(git diff --name-only HEAD^ HEAD | grep -E '\.(py|js|ts|java|cpp|cs)$' || true)
-          if [ -n "$coverage_files" ]; then
-            echo "coverage_files=$coverage_files" >> $GITHUB_ENV
-          else
-            echo "did not create coverage_files"
-            exit 0
-          fi
-          
-      - name: Adding coverage files
-        if: env.changed_files != ''
-        run: |
-            pytest --cov=tictactoegame --cov-report=term-missing "${{ env.coverage_files }}"    # Generates the coverage report in XML format
-            echo "${{ env.coverage_files }}"
+          pytest --cov=<your_project> --cov-report=xml:coverage.xml ${{ env.changed_files }}
+          echo "Generated coverage for changed files."
 
-      - name: Run test generation script
+      - name: Run Test Generation Script
         if: env.changed_files != ''
         run: python generate_tests.py "${{ env.changed_files }}"
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_MODEL: ${{ secrets.OPENAI_MODEL }}
           OPENAI_MAX_TOKENS: ${{ secrets.OPENAI_MAX_TOKENS }}
-      
-      - name: Create unique branch name
+
+      - name: Create Unique Branch Name
         if: env.changed_files != ''
         run: |
           branch_name="test-gen-$(date +%Y%m%d-%H%M%S)"
           echo "BRANCH_NAME=$branch_name" >> $GITHUB_ENV
-      
+
       - name: Configure Git
         if: env.changed_files != ''
         run: |
           git config --global user.name "GitHub Actions Bot"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git remote set-url origin https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/${{ github.repository }}
-      
-      - name: Commit and push changes
+
+      - name: Commit and Push Changes
         if: env.changed_files != ''
         run: |
           if [ -n "$(git status --porcelain)" ]; then
@@ -130,31 +105,23 @@ jobs:
           else
             echo "No changes to commit"
           fi
-      
+
       - name: Create Pull Request
         if: env.CHANGES_PUSHED == '1'
         uses: repo-sync/pull-request@v2
         with:
-          github_token: ${{ secrets.PAT_TOKEN }}  # Use PAT for PR creation
+          github_token: ${{ secrets.PAT_TOKEN }}
           pr_title: "✨ New Test Cases Generated"
           pr_body: |
             ## 🤖 Automated Test Generation
-            
             Generated test cases for the following files:
             ```
             ${{ env.changed_files }}
             ```
-            Here is a coverage report to help:
+            Coverage report:
             ```
-            "${{ env.coverage_files }}"
+            See coverage.xml for details.
             ```
-            
-            Please review these generated tests for:
-            - Correctness
-            - Coverage
-            - Edge cases
-            - Error handling
-            
-            Generated using OpenAI model: ${{ env.OPENAI_MODEL }}
+            Please review for correctness, coverage, edge cases, and error handling.
           destination_branch: "main"
           source_branch: ${{ env.BRANCH_NAME }}
