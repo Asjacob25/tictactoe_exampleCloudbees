@@ -34,6 +34,10 @@ class TicTacToe:
         self.current_player = 'O' if self.current_player == 'X' else 'X'
         return True, "Move successful"
 
+    def get_move_count(self):
+        """Returns the total number of moves made in the current game."""
+        return len(self.move_history)
+
     def undo_move(self):
         """Undo the last move made, if any."""
         if not self.move_history:
