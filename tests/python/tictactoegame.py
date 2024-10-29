@@ -54,6 +54,17 @@ class TicTacToe:
         if moves:
             return moves[0]
         return None
+    
+    def get_corner_move(self):
+        """Returns an available corner move, if any."""
+        corners = [0, self.board_size - 1, 
+                self.board_size * (self.board_size - 1), 
+                self.board_size * self.board_size - 1]
+        available_corners = [corner for corner in corners if self.board[corner] == ' ']
+        if available_corners:
+            return available_corners[0]
+        return None
+
 
     def undo_move(self):
         """Undo the last move made, if any."""
