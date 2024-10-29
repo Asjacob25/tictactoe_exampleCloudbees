@@ -72,6 +72,21 @@ class TicTacToe:
             return center
         return None
 
+    def get_edge_move(self):
+        """Returns an available edge move, if any."""
+        edges = [i for i in range(self.board_size * self.board_size) 
+                if i not in [0, self.board_size - 1, 
+                            self.board_size * (self.board_size - 1), 
+                            self.board_size * self.board_size - 1] 
+                and (i // self.board_size == 0 or i // self.board_size == self.board_size - 1 
+                    or i % self.board_size == 0 or i % self.board_size == self.board_size - 1)]
+        
+        available_edges = [edge for edge in edges if self.board[edge] == ' ']
+        if available_edges:
+            return available_edges[0]
+        return None
+
+
 
     def undo_move(self):
         """Undo the last move made, if any."""
