@@ -70,7 +70,7 @@ jobs:
       - name: Generate Coverage Report for Changed Files
         if: env.changed_files != ''
         run: |
-          pytest --cov=<your_project> --cov-report=xml:coverage.xml ${{ env.changed_files }}
+          pytest --cov=tictactoegame --cov-report=xml:coverage.xml ${{ env.changed_files }}
           echo "Generated coverage for changed files."
 
       - name: Run Test Generation Script
