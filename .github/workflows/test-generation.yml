@@ -38,28 +38,34 @@ jobs:
 
   generate-tests:
     runs-on: ubuntu-latest
-    environment: testgeneration
+    environment: testgeneration  
     steps:
       - uses: actions/checkout@v3
         with:
-          fetch-depth: 0
-          token: ${{ secrets.PAT_TOKEN }}
-
+          fetch-depth: 0  # Fetch all history
+          token: ${{ secrets.PAT_TOKEN }}  # Use PAT for checkout
+      
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.8'
-
-      - name: Install dependencies
+      
+      - name: Install dependencies Part 2
         run: |
           python -m pip install --upgrade pip
           pip install requests pytest pytest-cov
-
-      - name: Detect Changed Files
+      
+      - name: Create tests directory
+        run: mkdir -p tests
+      
+      - name: Detect changed files
         id: files
         run: |
           changed_files=$(git diff --name-only HEAD^ HEAD | grep -E '\.(py|js|ts|java|cpp|cs)$' || true)
+          changed_files=$(git diff --name-only HEAD^ HEAD | grep -E '\.(py|js|ts|java|cpp|cs)$' || true)
           if [ -n "$changed_files" ]; then
+            # Replace newlines with spaces or commas
+            changed_files=$(echo "$changed_files" | tr '\n' ' ')
             echo "changed_files=$changed_files" >> $GITHUB_ENV
             echo "Found changed files: $changed_files"
           else
@@ -67,34 +73,45 @@ jobs:
             exit 0
           fi
 
-      - name: Generate Coverage Report for Changed Files
+      - name: Create coverage_files
         if: env.changed_files != ''
         run: |
-          pytest --cov=tictactoegame --cov-report=xml:coverage.xml ${{ env.changed_files }}
-          echo "Generated coverage for changed files."
+          coverage_files=$(git diff --name-only HEAD^ HEAD | grep -E '\.(py|js|ts|java|cpp|cs)$' || true)
+          if [ -n "$coverage_files" ]; then
+            echo "coverage_files=$coverage_files" >> $GITHUB_ENV
+          else
+            echo "did not create coverage_files"
+            exit 0
+          fi
+          
+      - name: Adding coverage files
+        if: env.changed_files != ''
+        run: |
+            pytest --cov=tictactoegame --cov-report=term-missing "${{ env.coverage_files }}"    # Generates the coverage report in XML format
+            echo "${{ env.coverage_files }}"
 
-      - name: Run Test Generation Script
+      - name: Run test generation script
         if: env.changed_files != ''
         run: python generate_tests.py "${{ env.changed_files }}"
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_MODEL: ${{ secrets.OPENAI_MODEL }}
           OPENAI_MAX_TOKENS: ${{ secrets.OPENAI_MAX_TOKENS }}
-
-      - name: Create Unique Branch Name
+      
+      - name: Create unique branch name
         if: env.changed_files != ''
         run: |
           branch_name="test-gen-$(date +%Y%m%d-%H%M%S)"
           echo "BRANCH_NAME=$branch_name" >> $GITHUB_ENV
-
+      
       - name: Configure Git
         if: env.changed_files != ''
         run: |
           git config --global user.name "GitHub Actions Bot"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git remote set-url origin https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/${{ github.repository }}
-
-      - name: Commit and Push Changes
+      
+      - name: Commit and push changes
         if: env.changed_files != ''
         run: |
           if [ -n "$(git status --porcelain)" ]; then
@@ -106,23 +123,31 @@ jobs:
           else
             echo "No changes to commit"
           fi
-
+      
       - name: Create Pull Request
         if: env.CHANGES_PUSHED == '1'
         uses: repo-sync/pull-request@v2
         with:
-          github_token: ${{ secrets.PAT_TOKEN }}
+          github_token: ${{ secrets.PAT_TOKEN }}  # Use PAT for PR creation
           pr_title: "✨ New Test Cases Generated"
           pr_body: |
             ## 🤖 Automated Test Generation
+            
             Generated test cases for the following files:
             ```
             ${{ env.changed_files }}
             ```
-            Coverage report:
+            Here is a coverage report to help:
             ```
-            See coverage.xml for details.
+            "${{ env.coverage_files }}"
             ```
-            Please review for correctness, coverage, edge cases, and error handling.
+            
+            Please review these generated tests for:
+            - Correctness
+            - Coverage
+            - Edge cases
+            - Error handling
+            
+            Generated using OpenAI model: ${{ env.OPENAI_MODEL }}
           destination_branch: "main"
           source_branch: ${{ env.BRANCH_NAME }}
