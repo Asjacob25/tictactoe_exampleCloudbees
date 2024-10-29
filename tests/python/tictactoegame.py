@@ -48,6 +48,12 @@ class TicTacToe:
             self.board[square] = ' '  # Reset the move after checking
         return False
 
+    def get_first_available_move(self):
+        """Returns the first available move for the current player."""
+        moves = self.available_moves()
+        if moves:
+            return moves[0]
+        return None
 
     def undo_move(self):
         """Undo the last move made, if any."""
