@@ -65,6 +65,13 @@ class TicTacToe:
             return available_corners[0]
         return None
 
+    def get_center_move(self):
+        """Returns the center square if it's available; otherwise, returns None."""
+        center = (self.board_size * self.board_size) // 2
+        if self.board[center] == ' ':
+            return center
+        return None
+
 
     def undo_move(self):
         """Undo the last move made, if any."""
