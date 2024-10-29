@@ -58,6 +58,14 @@ class TicTacToe:
         self.current_player = last_player
         return True, "Last move undone."
 
+    def get_random_move(self):
+        """Returns a random available move for the current player."""
+        moves = self.available_moves()
+        if moves:
+            return random.choice(moves)
+        return None
+
+
     def check_winner(self, square):
         row_ind = square // self.board_size
         col_ind = square % self.board_size
